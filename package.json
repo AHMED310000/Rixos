@@ -1,1 +1,1 @@
-{"name":"rixos","version":"1.0.0","type":"module","scripts":{"start":"node src/index.ts"},"dependencies":{"express":"^4.19.2"},"devDependencies":{"@types/express":"^5.0.6"}}
+{"name":"rixos","version":"1.0.0","type":"module","scripts":{"start":"node src/index.ts"},"dependencies":{"express":"^4.22.1","ts-node":"^10.9.2","typescript":"^5.9.3"},"devDependencies":{"@types/express":"^5.0.6"}}
