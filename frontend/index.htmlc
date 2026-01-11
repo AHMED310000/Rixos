@@ -1,0 +1,12 @@
+<link rel="stylesheet" href="globals.css">
+<script src="script.js"></script><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Rixos App</title>
+</head>
+<body>
+  <h1>Rixos is running 🚀</h1>
+  <p>Backend is on a separate server.</p>
+</body>
+</html>
