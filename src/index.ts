@@ -1,13 +1,15 @@
 import express from 'express';
-import path from 'path';
 import fetch from 'node-fetch';
+import path from 'path';
 
 const app = express();
 app.use(express.json());
 
-const API_KEY = 'YOUR_API_KEY';
-const RECEIVER_PI_ID = 'receiver_pi_id';
+
+const API_KEY = 'YOUR_API_KEY';  // حط هنا الـAPI Key من Pi Developer Portal
+const RECEIVER_PI_ID = 'receiver_pi_id'; // حسابك أو حساب البائع
 const PI_API_URL = 'https://api.minepi.com/v2/payments';
+
 
 app.get('/', (req, res) => {
   res.send(`
@@ -53,6 +55,7 @@ app.get('/', (req, res) => {
     </html>
   `);
 });
+
 
 app.post('/pay', async (req, res) => {
   const { userId, amount } = req.body;
