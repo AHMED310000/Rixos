@@ -1,14 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  images: {
-    unoptimized: true,
-  },
-}
+    output: 'export',
+    basePath: '/Rixos',
+    assetPrefix: '/Rixos/',
+};
 
-export default nextConfig
+export default nextConfig;
