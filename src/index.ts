@@ -93,4 +93,8 @@ app.post('/pay', async (req, res) => {
 });
 
 const PORT = 7002;
+app.get("/validation-key.txt", (req, res) => {
+  res.type("text/plain");
+  res.send(process.env.VALIDATION_KEY);
+});
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
