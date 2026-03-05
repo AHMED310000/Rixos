@@ -17,6 +17,7 @@
 <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 
 <script>
+// تفعيل Pi SDK مع Sandbox للتجربة
 Pi.init({ version: "2.0", sandbox: true });
 
 let user = null;
@@ -37,9 +38,11 @@ document.getElementById("loginBtn").onclick = async function() {
 // الدفع
 document.getElementById("payBtn").onclick = async function() {
   try {
+    // جلب بيانات الدفع من Netlify Function
     const res = await fetch("/.netlify/functions/create-payment");
     const data = await res.json();
 
+    // إنشاء الدفع عبر Pi SDK
     Pi.createPayment({
       amount: data.amount,
       memo: data.memo,
@@ -60,7 +63,7 @@ document.getElementById("payBtn").onclick = async function() {
 
       onError: function(error) {
         console.error(error);
-        alert("حدث خطأ أثناء الدفع");
+        alert("حدث خطأ أثناء الدفع: " + error.message);
       }
     });
   } catch(err) {
