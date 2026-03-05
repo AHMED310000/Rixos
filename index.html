@@ -2,7 +2,7 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8">
-  <title>Rixos Pi Store</title>
+  <title>متجر Rixos Pi</title>
 </head>
 <body>
 
@@ -11,66 +11,77 @@
 <!-- زر تسجيل دخول Pi -->
 <button id="loginBtn">Login with Pi</button>
 
-<!-- زر الدفع -->
-<button id="payBtn" style="display:none">Pay 0.01 Pi</button>
+<!-- قائمة المنتجات -->
+<div id="products" style="display:none">
+  <div>
+    <h2>منتج 1</h2>
+    <p>السعر: 0.01 Pi</p>
+    <button class="payBtn" data-amount="0.01" data-product="منتج 1">ادفع الآن</button>
+  </div>
+  <div>
+    <h2>منتج 2</h2>
+    <p>السعر: 0.02 Pi</p>
+    <button class="payBtn" data-amount="0.02" data-product="منتج 2">ادفع الآن</button>
+  </div>
+</div>
 
 <script src="https://sdk.minepi.com/pi-sdk.js"></script>
-
 <script>
-// تفعيل Pi SDK مع Sandbox للتجربة
-Pi.init({ version: "2.0", sandbox: true });
+Pi.init({ version: "2.0", sandbox: true }); // وضع Sandbox للتجربة
 
 let user = null;
 
-// تسجيل الدخول في Pi
+// تسجيل الدخول
 document.getElementById("loginBtn").onclick = async function() {
   try {
     user = await Pi.authenticate(['username', 'payments']);
     alert(`مرحباً ${user?.username || "مستخدم Pi"}`);
     document.getElementById("loginBtn").style.display = 'none';
-    document.getElementById("payBtn").style.display = 'inline';
+    document.getElementById("products").style.display = 'block';
   } catch(err) {
     console.error(err);
     alert('فشل تسجيل الدخول');
   }
 };
 
-// الدفع
-document.getElementById("payBtn").onclick = async function() {
-  try {
-    // جلب بيانات الدفع من Netlify Function
-    const res = await fetch("/.netlify/functions/create-payment");
-    const data = await res.json();
+// التعامل مع كل زر دفع
+document.querySelectorAll(".payBtn").forEach(btn => {
+  btn.onclick = async function() {
+    const amount = parseFloat(btn.dataset.amount);
+    const product = btn.dataset.product;
 
-    // إنشاء الدفع عبر Pi SDK
-    Pi.createPayment({
-      amount: data.amount,
-      memo: data.memo,
-      metadata: { product: "Rixos Test" },
+    try {
+      // جلب بيانات الدفع من Netlify Function
+      const res = await fetch("/.netlify/functions/create-payment");
+      const data = await res.json();
 
-      onReadyForServerApproval: function(paymentId) {
-        console.log("Ready for approval:", paymentId);
-      },
+      // إنشاء الدفع
+      Pi.createPayment({
+        amount: amount, // أو data.amount لو عايز من Function
+        memo: `دفع ${product}`,
+        metadata: { product },
 
-      onReadyForServerCompletion: function(paymentId, txid) {
-        alert("تم الدفع بنجاح!");
-        console.log("Payment complete:", paymentId, txid);
-      },
-
-      onCancel: function(paymentId) {
-        alert("تم إلغاء الدفع");
-      },
-
-      onError: function(error) {
-        console.error(error);
-        alert("حدث خطأ أثناء الدفع: " + error.message);
-      }
-    });
-  } catch(err) {
-    console.error(err);
-    alert("فشل إنشاء الدفع");
+        onReadyForServerApproval(paymentId) {
+          console.log("Ready for approval:", paymentId);
+        },
+        onReadyForServerCompletion(paymentId, txid) {
+          alert(`تم الدفع بنجاح! المنتج: ${product}`);
+          console.log("Payment complete:", paymentId, txid);
+        },
+        onCancel(paymentId) {
+          alert("تم إلغاء الدفع");
+        },
+        onError(error) {
+          console.error(error);
+          alert("حدث خطأ أثناء الدفع: " + error.message);
+        }
+      });
+    } catch(err) {
+      console.error(err);
+      alert("فشل إنشاء الدفع");
+    }
   }
-};
+});
 </script>
 
 </body>
