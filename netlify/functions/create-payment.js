@@ -8,8 +8,8 @@ export async function handler(event, context) {
     },
     body: JSON.stringify({
       identifier: paymentId,
-      amount: 0.01,
-      memo: "Test payment for Rixos"
+      amount: 0.01,  // يمكنك تغيير المبلغ حسب المنتج
+      memo: "Rixos Test Payment"
     })
   };
 }
