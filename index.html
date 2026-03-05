@@ -1,52 +1,73 @@
 <!DOCTYPE html>
-<html>
+<html lang="ar">
 <head>
-<meta charset="UTF-8">
-<title>Rixos Pi Store</title>
+  <meta charset="UTF-8">
+  <title>Rixos Pi Store</title>
 </head>
-
 <body>
 
-<h1>Welcome to Rixos</h1>
+<h1>مرحبا بك في متجر Rixos</h1>
 
-<button id="payBtn">Pay 0.01 Pi</button>
+<!-- زر تسجيل دخول Pi -->
+<button id="loginBtn">Login with Pi</button>
+
+<!-- زر الدفع -->
+<button id="payBtn" style="display:none">Pay 0.01 Pi</button>
 
 <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 
 <script>
-
 Pi.init({ version: "2.0" });
 
-document.getElementById("payBtn").onclick = async function () {
+let user = null;
 
-  const response = await fetch("/.netlify/functions/create-payment");
-  const data = await response.json();
-
-  Pi.createPayment({
-    amount: data.amount,
-    memo: data.memo,
-    metadata: { product: "Rixos Test" },
-
-    onReadyForServerApproval: function(paymentId) {
-      console.log(paymentId);
-    },
-
-    onReadyForServerCompletion: function(paymentId, txid) {
-      alert("Payment Success");
-    },
-
-    onCancel: function(paymentId) {
-      alert("Payment Cancelled");
-    },
-
-    onError: function(error) {
-      console.error(error);
-    }
-
-  });
-
+// تسجيل الدخول في Pi
+document.getElementById("loginBtn").onclick = async function() {
+  try {
+    user = await Pi.authenticate(['username', 'payments']);
+    alert(`مرحباً ${user.username}`);
+    document.getElementById("loginBtn").style.display = 'none';
+    document.getElementById("payBtn").style.display = 'inline';
+  } catch(err) {
+    console.error(err);
+    alert('فشل تسجيل الدخول');
+  }
 };
 
+// الدفع
+document.getElementById("payBtn").onclick = async function() {
+  try {
+    const res = await fetch("/.netlify/functions/create-payment");
+    const data = await res.json();
+
+    Pi.createPayment({
+      amount: data.amount,
+      memo: data.memo,
+      metadata: { product: "Rixos Test" },
+
+      onReadyForServerApproval: function(paymentId) {
+        console.log("Ready for approval:", paymentId);
+      },
+
+      onReadyForServerCompletion: function(paymentId, txid) {
+        alert("تم الدفع بنجاح!");
+        console.log("Payment complete:", paymentId, txid);
+      },
+
+      onCancel: function(paymentId) {
+        alert("تم إلغاء الدفع");
+      },
+
+      onError: function(error) {
+        console.error(error);
+        alert("حدث خطأ أثناء الدفع");
+      }
+    });
+  } catch(err) {
+    console.error(err);
+    alert("فشل إنشاء الدفع");
+  }
+};
 </script>
 
 </body>
