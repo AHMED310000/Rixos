@@ -95,6 +95,37 @@ app.post('/pay', async (req, res) => {
 const PORT = 7002;
 app.get("/validation-key.txt", (req, res) => {
   res.type("text/plain");
+<button id="payBtn">Pay 0.01 Pi</button>
+<script src="https://sdk.minepi.com/pi-sdk.js"></script>
+
+<script>
+Pi.init({ version: "2.0" });
+
+document.getElementById("payBtn").addEventListener("click", async () => {
+  try {
+
+    const res = await fetch("/.netlify/functions/create-payment");
+    const data = await res.json();
+
+    const payment = Pi.createPayment({
+      amount: data.amount,
+      memo: data.memo,
+      metadata: { product: "Rixos Test" }
+    });
+
+    payment.then(function(result) {
+      alert("Payment success");
+    }).catch(function(error) {
+      alert("Payment failed");
+    });
+
+  } catch (err) {
+    console.log(err);
+    alert("Error creating payment");
+  }
+});
+</script>
+
   res.send(process.env.VALIDATION_KEY);
 });
 app.listen(PORT, () => console.log(`Server running on port 
