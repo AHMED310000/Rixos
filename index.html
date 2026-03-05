@@ -25,7 +25,7 @@ let user = null;
 document.getElementById("loginBtn").onclick = async function() {
   try {
     user = await Pi.authenticate(['username', 'payments']);
-    alert(`مرحباً ${user.username}`);
+    alert(`مرحباً ${user?.username || "مستخدم Pi"}`);
     document.getElementById("loginBtn").style.display = 'none';
     document.getElementById("payBtn").style.display = 'inline';
   } catch(err) {
